@@ -32,17 +32,17 @@ var nagios = map[int]string{
 	stateFail:    "CRITICAL",
 }
 
-
 var hostPort = flag.String("hostPort", "ip:21", "ip and port of the ftp-server, e.g. ftp.example.com:21")
 var login = flag.String("login", "MyUsername", "ftp-login")
 var password = flag.String("password", "MyPassword", "ftp-password")
 var logDir = flag.String("logdir", "/log/", "sub-directory for our wanted file")
 var fileName = flag.String("filename", "access_log", "filename we are looking for")
 var fileDelim = flag.String("delim", "-", "adds given delimeter between fileName and currentDate if addToday was set")
-var addToday = flag.Bool("date", true, "adds suffix of the current date in Form %YY-%MM-%DD to the filename")
+var fileSuffix = flag.String("suffix", "", "possible suffix that will be added to the filename")
+var addToday = flag.Bool("date", false, "adds suffix of the current date in form %YY-%MM-%DD to the filename")
+var addYesterday = flag.Bool("yesterday", false, "add suffix of yesterday in form %YY-%MM-%DD to the filename")
 var minSize = flag.Uint64("minsize", 1, "minimum shall be 1 byte ")
 var maxSize = flag.Uint64("maxsize", MaxUint, "maximum  Uint64 size")
-
 
 func main() {
 	var ftpStatus = stateFail
@@ -54,6 +54,7 @@ func main() {
 	flag.Parse()
 
 	t := time.Now()
+	ty := t.Add(-24 * time.Hour)
 
 	conn, err := ftp.Dial(*hostPort)
 	if err != nil {
@@ -75,12 +76,15 @@ func main() {
 	}
 
 	if *addToday == true {
-		FilenameFull = fmt.Sprintf("%s%s%02d-%02d-%02d", *fileName, *fileDelim, t.Year(), t.Month(), t.Day())
-
+		FilenameFull = fmt.Sprintf("%s%s%02d-%02d-%02d%s", *fileName, *fileDelim, t.Year(), t.Month(), t.Day(),
+			*fileSuffix)
+	} else if *addYesterday == true {
+		FilenameFull = fmt.Sprintf("%s%s%02d-%02d-%02d%s", *fileName, *fileDelim, ty.Year(), ty.Month(), ty.Day(),
+			*fileSuffix)
 	} else {
-		FilenameFull = fmt.Sprintf("%s", *fileName)
-
+		FilenameFull = fmt.Sprintf("%s%s", *fileName, *fileSuffix)
 	}
+
 	files, err = conn.List(*logDir)
 
 	for _, v := range files {
