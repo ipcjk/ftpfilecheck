@@ -12,8 +12,9 @@ parameter list:
 -minsize => minium size, optional
 -maxsize => maximum size, optional
 -date => if set, will add the current date in combination with fileDelim to the filename
+-yesterday => if set, will add yesterdays date  in combination with fileDelim to the filename
 -fileDelim => delimiter between filename add addToday if last one was set to true
--fileSuffix => possible suffix, that is added after date
+-suffix => possible suffix, that is added after date
 
 E.g. I am interested if certain logfiles was shipped last night from a third party to an external
 host, so I invoke the command:
