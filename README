@@ -19,5 +19,24 @@ parameter list:
 E.g. I am interested if certain logfiles was shipped last night from a third party to an external
 host, so I invoke the command:
 
+# Test call from shell
 joerg$ ./ftpfilecheck -delim "-" -filename "access_log" -hostPort "ftp.example.com:21" -logdir "/log" -login "web0" -password "network" -yesterday true
 OK Found access_log-2016-07-02, size is 125310
+
+# Example configuration for Nagios, to check yesterdays logfiles
+
+# Command
+define command {
+        command_name    ftpfilecheck_yesterday
+        command_line    $USER1$/ftpfilecheck -delim "$ARG1$" -filename "$ARG2$" -hostPort "$ARG3$" -logdir "$ARG4$" -login $ARG5$ -password $ARG6$ -suffix $ARG7$ -yesterday true
+}
+
+# Service configuration
+define service{
+        use generic-team-service
+        host_name radiostations
+        service_description 90.3FM-Log
+        check_command ftpfilecheck_yesterday!-!903FM!seattle-ftp:21!/upload/!seattle-903fm!foobar!.log.gz
+        max_check_attempts 5
+        contact_groups admins
+}
