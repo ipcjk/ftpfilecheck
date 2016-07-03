@@ -22,7 +22,6 @@ const (
 	ftpCantLogin   = "Authentication failed"
 	ftpCantCmd     = "Cant send command to server"
 	ftpCantList    = "Directory listing not available"
-	ftpCantLogout  = "Logout failed"
 	ftpFileWrong   = "%s has wrong size or is empty, size is %d"
 	MaxUint        = ^uint64(0)
 )
@@ -79,7 +78,7 @@ func main() {
 		FilenameFull = fmt.Sprintf("%s%s%02d-%02d-%02d", *fileName, *fileDelim, t.Year(), t.Month(), t.Day())
 
 	} else {
-		FilenameFull = fmt.Sprintf("%s")
+		FilenameFull = fmt.Sprintf("%s", *fileName)
 
 	}
 	files, err = conn.List(*logDir)
