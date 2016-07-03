@@ -1,0 +1,21 @@
+ftpfilecheck plugin for Nagios / Icinga
+
+checks if a given filename is reachable over a ftp login and also has
+a reasonable size.
+
+parameter list:
+-hostPort => your ftp server and port, e.g. server:21
+-login => Login username
+-password => Login password
+-filename => filename, optional
+-directory => directory, optional
+-minsize => minium size, optional
+-maxsize => maximum size, optional
+-date => if set, will add the current date in combination with fileDelim to the filename
+-fileDelim => delimiter between filename add addToday if last one was set to true
+
+E.g. I am interested if certain logfiles was shipped last night from a third party to an external
+host, so I invoke the command:
+
+joerg$ ./ftpfilecheck -delim "-" -filename "access_log" -hostPort "ftp.example.com:21" -logdir "/log" -login "web0" -password "network" -date true
+OK Found access_log-2016-07-03, size is 125310
