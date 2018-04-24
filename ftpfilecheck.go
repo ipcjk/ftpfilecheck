@@ -62,7 +62,7 @@ func checkFileFromSFTP () {
 	var ftpStatus = stateFail
 	var ftpMessage = "Unbekannt"
 	var client *sftp.Client
-	var client_cwd, FilenameFull string
+	var filenameFull string
 	var fileInfo os.FileInfo
 
 	t := time.Now()
@@ -92,38 +92,37 @@ func checkFileFromSFTP () {
 
 	// Close connection later
 	defer client.Close()
-	client_cwd, err = client.Getwd()
+	_, err = client.Getwd()
 	if err != nil {
 		ftpMessage = ftpCantCmd
 		goto printError
 	}
-	println("Current working directory:", client_cwd)
 
 	// Generate FileName
 	if *addToday == true {
-		FilenameFull = fmt.Sprintf("%s%s%02d-%02d-%02d%s", *fileName, *fileDelim, t.Year(), t.Month(), t.Day(),
+		filenameFull = fmt.Sprintf("%s%s%02d-%02d-%02d%s", *fileName, *fileDelim, t.Year(), t.Month(), t.Day(),
 			*fileSuffix)
 	} else if *addYesterday == true {
-		FilenameFull = fmt.Sprintf("%s%s%02d-%02d-%02d%s", *fileName, *fileDelim, ty.Year(), ty.Month(), ty.Day(),
+		filenameFull = fmt.Sprintf("%s%s%02d-%02d-%02d%s", *fileName, *fileDelim, ty.Year(), ty.Month(), ty.Day(),
 			*fileSuffix)
 	} else {
-		FilenameFull = fmt.Sprintf("%s%s", *fileName, *fileSuffix)
+		filenameFull = fmt.Sprintf("%s%s", *fileName, *fileSuffix)
 	}
-	fileInfo, err = client.Stat(*logDir+FilenameFull)
+	fileInfo, err = client.Stat(*logDir+filenameFull)
 	if err != nil {
-		ftpMessage = fmt.Sprintf(ftpCantFind, FilenameFull)
+		ftpMessage = fmt.Sprintf(ftpCantFind, filenameFull)
 		ftpStatus = stateFail
 		goto printError
 	}
 
 	if uint64(fileInfo.Size()) <= *minSize {
-		ftpMessage = fmt.Sprintf(ftpFileWrong, FilenameFull, fileInfo.Size())
+		ftpMessage = fmt.Sprintf(ftpFileWrong, filenameFull, fileInfo.Size())
 		ftpStatus = stateWarning
 	} else if uint64(fileInfo.Size()) > *maxSize {
-		ftpMessage = fmt.Sprintf(ftpFileWrong, FilenameFull,fileInfo.Size())
+		ftpMessage = fmt.Sprintf(ftpFileWrong, filenameFull,fileInfo.Size())
 		ftpStatus = stateWarning
 	} else {
-		ftpMessage = fmt.Sprintf(ftpCmdOk, FilenameFull, fileInfo.Size())
+		ftpMessage = fmt.Sprintf(ftpCmdOk, filenameFull, fileInfo.Size())
 		ftpStatus = stateOk
 	}
 
