@@ -1,6 +1,6 @@
 ftpfilecheck plugin for Nagios / Icinga
 
-checks if a given filename is reachable over a ftp login and also has
+checks if a given filename is reachable over a ftp or sftp login and also has
 a reasonable size.
 
 parameter list:
